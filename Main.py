@@ -1,5 +1,6 @@
 import pygame
-from Player import player
+from Player import Player
+from Enemy import Enemy 
 
 width,height = 820,480
 pygame.display.init()
@@ -9,7 +10,9 @@ win.blit(bg, (0,0))
 pygame.display.set_caption("First Game")
 clock = pygame.time.Clock()
 
-man = player(0, 500-20, width+25, height)
+man = Player(0, 500-20, width+25, height)
+goblin = Enemy(100, 410, 64, 64, 300)
+
 running = True
 while running:
     
@@ -19,5 +22,6 @@ while running:
             running = False
     
     man.move(win, bg)
+    goblin.draw(win)
     
 pygame.display.quit()
