@@ -12,6 +12,8 @@ class Enemy:
         self.path = [x, end]
         self.walkCount = 0
         self.vel = 3
+        self.hitbox = (self.x+20, self.y, 28, 60)
+        self.health = 100
 
     def draw(self, win):
         self.move()
@@ -24,6 +26,9 @@ class Enemy:
         else:
             win.blit(self.walkLeft[self.walkCount//3], (self.x,self.y))
             self.walkCount += 1
+        
+        self.hitbox = (self.x+20, self.y, 28, 57)
+        pygame.draw.rect(win, (0, 255, 0), (820 - 3*self.health, 0, 300, 50))
         pygame.display.update()
             
     def move(self):
@@ -41,4 +46,8 @@ class Enemy:
                 self.vel = self.vel * -1
                 self.x += self.vel
                 self.walkCount = 0
-        
+
+    def hit(self):
+        self.health -= 10
+        if self.health == 0:
+            print("Dead")

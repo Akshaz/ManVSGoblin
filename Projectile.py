@@ -10,7 +10,7 @@ class Projectile:
         self.vel = 8 * facing
     
     def draw(self, win):
-        pygame.draw.circle(win, self.color, (self.x,self.y), self.radius)
+        pygame.draw.circle(win, self.color, (self.x,int(self.y)), self.radius)
 
     def move(self, width):
         if self.x > 0 and self.x < width:

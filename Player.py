@@ -21,6 +21,9 @@ class Player:
         self.walkCount = 0
         self.standing = True
         self.bullets = []
+        self.hitbox = (self.x+20, self.y, 28, 60)
+        self.shootLoop = 0
+        self.health = 100
 
     def draw(self, win, bg):
         win.blit(bg, (0,0))
@@ -43,12 +46,18 @@ class Player:
                 win.blit(self.walkLeft[0], (self.x,self.y))
             else:
                 win.blit(self.walkRight[0], (self.x,self.y))
+        self.hitbox = (self.x+20, self.y+3, 28, 57)
         pygame.display.update()
 
     def keyLogger(self):
 
         keys = pygame.key.get_pressed()
 
+        if self.shootLoop > 0:
+            self.shootLoop += 1
+        if self.shootLoop > 3:
+            self.shootLoop = 0
+        
         if(keys[pygame.K_LEFT] and self.x > 0):
             self.x = self.x - self.charSize
             self.left = True
@@ -61,7 +70,7 @@ class Player:
             self.right = True
             self.standing = False
 
-        if(keys[pygame.K_SPACE] and len(self.bullets) < 5):
+        if(keys[pygame.K_SPACE] and self.shootLoop == 0 and len(self.bullets) < 5):
 
             if self.left:
                 facing = -1
@@ -70,6 +79,8 @@ class Player:
                 facing = +1
 
             self.bullets.append(Projectile(self.x + self.charSize // 2, self.y + self.charSize //2, 6, (0,0,0),facing))
+
+            self.shootLoop = 1
 
         else:
             self.standing = True
