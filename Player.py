@@ -1,4 +1,6 @@
 import pygame
+from Projectile import Projectile
+
 class player:
 
     def __init__(self, x, y, width, height):
@@ -19,53 +21,91 @@ class player:
         self.right = False
         self.steps = False
         self.walkCount = 0
+        self.standing = True
+        self.bullets = []
 
     def draw(self, win, bg):
         win.blit(bg, (0,0))
+
+        for bullet in self.bullets:
+            bullet.draw(win)
+
         if self.walkCount + 1>=27:
-            self.walkCount = 0
-        if self.left:
-            win.blit(self.walkLeft[self.walkCount//3], (self.x,self.y))
-            self.walkCount += 1
-        elif self.right:
-            win.blit(self.walkRight[self.walkCount//3], (self.x,self.y))
-            self.walkCount += 1
+                self.walkCount = 0
+
+        if not self.standing:    
+            if self.left:
+                win.blit(self.walkLeft[self.walkCount//3], (self.x,self.y))
+                self.walkCount += 1
+            elif self.right:
+                win.blit(self.walkRight[self.walkCount//3], (self.x,self.y))
+                self.walkCount += 1
         else:
-            win.blit(self.standing, (self.x,self.y))
+            if self.left:
+                win.blit(self.walkLeft[0], (self.x,self.y))
+            else:
+                win.blit(self.walkRight[0], (self.x,self.y))
         pygame.display.update()
 
     def keyLogger(self):
+
         keys = pygame.key.get_pressed()
+
         if(keys[pygame.K_LEFT] and self.x > 0):
             self.x = self.x - self.charSize
             self.left = True
             self.right = False
-        elif(keys[pygame.K_RIGHT] and self.x < self.width - (self.charSize + 20)):
+            self.standing = False
+
+        if(keys[pygame.K_RIGHT] and self.x < self.width - (self.charSize + 20)):
             self.x = self.x + self.charSize
             self.left = False
             self.right = True
+            self.standing = False
+
+        if(keys[pygame.K_SPACE] and len(self.bullets) < 5):
+
+            if self.left:
+                facing = -1
+
+            else:
+                facing = +1
+
+            self.bullets.append(Projectile(self.x + self.charSize // 2, self.y + self.charSize //2, 6, (0,0,0),facing))
+
         else:
-            self.left = False
-            self.right = False
+            self.standing = True
             self.walkCount = 0
 
-        if keys[pygame.K_SPACE] and not self.inJump:
+        if keys[pygame.K_UP] and not self.inJump:
                 self.inJump = True
                 self.left = False
                 self.right = False
                 self.walkCount = 0
+
         if self.inJump:
+
             if self.JumpCount >= -10:
+
                 if self.JumpCount < 0:
                     neg = -1
+
                 else:
                     neg = 1
+
                 self.y -= self.JumpCount ** 2 * 0.5 * neg
                 self.JumpCount -= 1
+
             else:
                 self.JumpCount = 10
                 self.inJump = False
 
+    def checkBullets(self):
+        for bullet in self.bullets:
+            if bullet.move(self.width):
+                self.bullets.pop(self.bullets.index(bullet))
+                
     def move(self, win, bg):
         self.keyLogger()
+        self.checkBullets()
         self.draw(win, bg)
