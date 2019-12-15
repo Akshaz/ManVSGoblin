@@ -1,7 +1,7 @@
 import pygame
 
 class Projectile:
-    def __init__(self, x, y, radius, color,facing):
+    def __init__(self, x, y, radius, color, facing):
         self.x = x
         self.y = y
         self.radius = radius
