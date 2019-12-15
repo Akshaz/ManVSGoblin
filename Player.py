@@ -1,11 +1,15 @@
-import pygame
+import pygame, sys
 from Projectile import Projectile
+
+pygame.font.init()
+pygame.mixer.init()
 
 class Player:
 
     walkLeft = [pygame.image.load("Images/L1.png"), pygame.image.load("Images/L2.png"), pygame.image.load("Images/L3.png"), pygame.image.load("Images/L4.png"), pygame.image.load("Images/L5.png"), pygame.image.load("Images/L6.png"), pygame.image.load("Images/L7.png"), pygame.image.load("Images/L8.png"), pygame.image.load("Images/L9.png")]
 
     walkRight = [pygame.image.load("Images/R1.png"), pygame.image.load("Images/R2.png"), pygame.image.load("Images/R3.png"), pygame.image.load("Images/R4.png"), pygame.image.load("Images/R5.png"), pygame.image.load("Images/R6.png"), pygame.image.load("Images/R7.png"), pygame.image.load("Images/R8.png"), pygame.image.load("Images/R9.png")]
+
 
     def __init__(self, x, y, width, height):
 
@@ -24,6 +28,7 @@ class Player:
         self.hitbox = (self.x+20, self.y, 28, 60)
         self.shootLoop = 0
         self.health = 100
+        self.bullet = pygame.mixer.Sound("Music/bullet.wav")
 
     def draw(self, win, bg):
         win.blit(bg, (0,0))
@@ -50,7 +55,7 @@ class Player:
         pygame.display.update()
 
     def keyLogger(self):
-
+        
         keys = pygame.key.get_pressed()
 
         if self.shootLoop > 0:
@@ -71,6 +76,8 @@ class Player:
             self.standing = False
 
         if(keys[pygame.K_SPACE] and self.shootLoop == 0 and len(self.bullets) < 5):
+
+            self.bullet.play()
 
             if self.left:
                 facing = -1
@@ -118,3 +125,22 @@ class Player:
         self.keyLogger()
         self.checkBullets()
         self.draw(win, bg)
+
+    def hit(self, win):
+        self.inJump = False
+        self.JumpCount = 10
+        self.x = 0
+        self.y = 480-self.charSize
+        self.walkCount = 0
+        font = pygame.font.SysFont('comicsans', 100)
+        text = font.render("-5", 1,(255, 0, 0), )
+        win.blit(text, (410, 240))
+        pygame.display.update()
+        i = 0
+        while(i<100):
+            pygame.time.delay(10)
+            i += 1
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+    
